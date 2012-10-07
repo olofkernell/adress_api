@@ -1,0 +1,220 @@
+<div id="main" role="main">
+
+    <div id="main-container">
+    
+        <!--! you can put content from elements.html, forms.html, file.html and charts.html below here to see other sections -->
+        
+        <!--! dashboard -->
+        <div id="body-section">
+
+			    <div id="left-menu">
+			        <ul>
+		              <li class="menu-trigger"><a href="#" class="data-16" id="c-contacts">Kontakter</a></li>
+			            <li class="menu-trigger"><a href="#" class="realtime-16" id="c-import-contacts">Importera kontakter</a></li>
+			            <li class="menu-trigger"><a href="#" class="edit-16" id="c-get-contacts">Lägg till</a></li>
+
+<!--
+			            <li class="menu-trigger"><a href="#" class="file-16" id="c-files">Filer</a></li>
+-->
+			        </ul>
+			        <div class="clearfix"></div>
+			    </div>
+			    
+			    <div id="content-container">
+			        <div id="content">
+			            <div class="c-contacts">
+			                <div class="box-holder">
+                        <div class="box-element first">
+                          <!--
+                          <%= link_to "Ny Kontakt", new_contact_path, {:class => 'i-button', :type => 'button'} %>
+                          <%= link_to "Ny Grupp", new_group_path, {:class => 'i-button', :type => 'button'} %>
+                          -->
+                          <div class="clearfix"></div>			                    			            
+                          <br>
+                          
+                            <div class="box-head"><span class="user-16"></span><h3>Kontakter <%= @group_name %></h3><a href="" class="collapsable"></a></div>
+                            <div class="box-content">                                                           
+                              <%= render '/contacts/display-contacts' %>                    				  
+                            </div>
+                        </div>
+                      </div>
+                      <div class="clearfix"></div>			                    			            
+            			</div>                 
+			            <div class="clearfix"></div>
+			            
+			            <div class="c-get-contacts">
+			              <div class="box-holder-one-half">
+                        <div class="box-element first">
+                            <div class="box-head"><span class="search-16"></span><h3>Lägg till person</h3><a href="" class="collapsable"></a></div>
+                            <div class="box-content">
+                              <p>Ange Mobilnummer och klicka på "Hämta Info"</p>           
+                              <%= form_for(@contact, :url => "/cc", :html => {:multipart => true, :'class' => 'i-validate'}) do |f| %>
+
+                                <fieldset>
+                                    <%= f.hidden_field :user_id, {:value => current_user.id} %>
+                                    
+                                    <section>   
+                                        <%= f.text_field :mobile, {:'type' => 'digits', :class => 'i-text required', :placeholder => 'Mobil', :style => 'width:60%;', :value => @tele} %> 
+                                        <%= link_to "Hämta Info", contacts_path, {:id => 'find_c', :class => 'i-button', :type => 'button'} %>
+                                                                                
+                                    </section>      
+                                    
+
+                                    <section>  
+                                        <%= f.text_field :first_name, {:'type' => 'text', :class => 'i-text required', :placeholder => 'Förnamn'} %>
+                                    </section>      
+                                    <section>        
+                                        <%= f.text_field :surname, {:'type' => 'text', :class => 'i-text required', :placeholder => 'Efternamn'} %>
+                                    </section>    
+                                    <section>        
+                                        <%= select_tag :'group_ids[]', options_from_collection_for_select(Group.all, "id", "name", @selected), :class => 'i-select required', :'multiple tabindex' => '1', :'data-placeholder' => 'Välj en eller flera grupper att tillhöra...', :required => '', :selected => '1' %>                                                  
+
+                                    </section>     
+   
+                                    
+                                    <br>
+                                    <div class="box-holder">
+                                        <div class="box-element">
+                                            <div class="box-head-light"><span class="edit-16"></span><h3 style="margin-bottom:1px;">Frivilliga tilläggsuppgifter</h3><a href="" class="collapsable collapsed"></a></div>
+                                            <div class="box-content no-padding grey-bg">
+                                              <section>        
+                                                  <%= f.text_field :pnr, {:'type' => 'personnummer', :class => 'i-text', :placeholder => 'Personnummer (ÅÅMMDDXXXX)'} %>
+                                              </section>  
+                                              <section>        
+                                                  <%= f.text_field :email, {:'type' => 'email', :class => 'i-text', :placeholder => 'Epostadress'} %>
+                                              </section>      
+                                              
+                                              <section>        
+                                                  <%= f.text_field :address, {:'type' => 'text', :class => 'i-text', :placeholder => 'Adress'} %>
+                                              </section>     
+                                              <section>        
+                                                  <%= f.text_field :zip, {:'type' => 'digits', :class => 'i-text', :placeholder => 'Postnummer'} %>
+                                              </section>     
+                                              <section>        
+                                                  <%= f.text_field :city, {:'type' => 'text', :class => 'i-text', :placeholder => 'Ort'} %>
+                                              </section>
+                                              <section>        
+                                                  <%= f.text_field :tele, {:'type' => 'digits', :class => 'i-text', :placeholder => 'Övrigt Telefonnummer'} %>
+                                              </section>
+                                              
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </fieldset>     
+                                <br>                     
+                                <input type="submit" name="submit" id="" class="i-button no-margin" value="Spara" />
+
+                                <script>
+                                  var find_contact_path = '/find_contact/:tele';  
+
+                                  $('#find_c').click(function() {
+                                    event.preventDefault();
+                                    var agent_data = {}
+                                    value = $('#contact_mobile').val();
+                                    $.ajax({
+                                            url: find_contact_path.replace(':tele', value),
+                                            type: "GET",
+                                            dataType: "json",
+                                            success: function(data, textStatus, xhr){  
+                                              agent_data = data
+                                              $("#contact_first_name").val(agent_data.fn);                                              
+                                              $("#contact_surname").val(agent_data.sn);
+                                                                                            
+                                              $("#contact_address").val(agent_data.street);                                              
+                                              $("#contact_zip").val(agent_data.zip);                                              
+                                              $("#contact_city").val(agent_data.city);                                              
+
+                                              $("#contact_tele").val(agent_data.tele);                                              
+
+                                            }
+                                         });
+
+                                   });
+
+
+                                </script>
+
+                              <% end %>
+                              
+
+
+                              <div class="clearfix"></div>                  
+                            </div>
+                        </div>
+                    </div>
+			              
+			              <div class="box-holder-one-half">
+                        <div class="box-element">
+                            <div class="box-head"><span class="realtime-16"></span><h3>Lägg till grupp</h3><a href="" class="collapsable"></a></div>
+                            <div class="box-content">
+                              <%= form_for(@group, :url => groups_path, :html => {:multipart => true, :'class' => 'i-validate2'}) do |f| %>
+
+                                <fieldset>
+                                    <%= f.hidden_field :user_id, {:value => current_user.id} %>
+
+                                    <section>        
+                                        <%= f.text_field :name, {:'type' => 'text', :class => 'i-text required', :placeholder => 'Välj ett namn på gruppen', :required => 'required'} %>
+                                    </section>  
+
+
+
+
+                                </fieldset>     
+                                <br>                     
+                                <input type="submit" name="submit" id="" class="i-button no-margin" value="Spara" />
+
+
+                              <% end %>
+
+                               <div class="clearfix"></div>
+                              
+                                                           
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+			              
+            			</div>                 
+			            <div class="clearfix"></div>
+	                                  
+			            <div class="c-import-contacts">
+			              <div class="box-holder-one-half">
+                        <div class="box-element first">
+                            <div class="box-head"><span class="search-16"></span><h3>Import Instruktion</h3><a href="" class="collapsable"></a></div>
+                            <div class="box-content">
+                              <h3>Import av kontakter görs enligt följande:</h3>                             
+                              <p>1. Ladda ner denna <strong><%= link_to 'fil', "../import-template.xls" %></strong> och fyll i dina kontakter. (.xls/.xlsx/.ods)</p>                             
+                              <p>2. Välj namn på importen</p>                             
+                              <p>3. Ladda upp filen med dina önskade kontakter</p>                             
+                              <p>4. Klart, dags för att SMSa dina nya kontakter</p>                             
+                            </div>
+                        </div>
+                    </div>
+			              
+			              <div class="box-holder-one-half">
+                        <div class="box-element">
+                            <div class="box-head"><span class="realtime-16"></span><h3>Importera Kontakter</h3><a href="" class="collapsable"></a></div>
+                            <div class="box-content">                             
+                              <%= render 'upload-form' %>                    				  
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+            			</div>                 
+			            <div class="clearfix"></div>
+			        </div>
+			    </div>
+			    <div class="clearfix"></div>          
+
+			</div> <!--! end of dashboard -->
+			
+			
+          </div> <!--! end of #main-container -->
+      </div>
+  </div> <!--! end of #container -->
+
+</div> <!--! end of #body-container -->
+
+

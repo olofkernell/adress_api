@@ -1,0 +1,22 @@
+development:
+    adapter: 'mysql2'
+    encoding: utf8
+    reconnect: false
+    host: 127.0.0.1
+    database: postadress
+    pool: 5
+    username: root
+    password: root
+    socket: /Applications/MAMP/tmp/mysql/mysql.sock
+
+
+test:   
+  adapter: sqlite3
+  database: sms_test.sqlite3
+
+production:
+  adapter: 'mysql2'
+  host: 127.0.0.1
+  database: postadress
+  username: root
+  password: flisan11
